@@ -1,6 +1,6 @@
 {
   "name": "tel-carrier",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Lookup the carrier and sms / mms gateway email addresses for a given phone number",
   "main": "tel-carrier",
   "scripts": {
