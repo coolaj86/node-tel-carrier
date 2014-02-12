@@ -54,7 +54,7 @@ Tracks Ported Numbers: NO
 <http://fonescout.com/revsearch.php>
 
 ```json
-{ service "fonefinder.net" }
+{ service: "fonefinder.net" }
 ```
 
 Submit bugs to this repo if the sms and mms gateways are incorrect.
@@ -69,8 +69,8 @@ Tracks Ported Numbers: YES
 
 ```json
 { service "data24-7.com"
-, username: 'your-user-name'
-, password: 'your-password'
+, username: "your-user-name"
+, password: "your-password"
 }
 ```
 
