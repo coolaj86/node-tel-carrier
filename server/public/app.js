@@ -5,7 +5,7 @@ $(function () {
     ev.preventDefault();
     ev.stopPropagation();
     $.get('/lookup?number=' + $('.js-number').val(), function (data) {
-      $('.js-result').val(JSON.stringify(data, null, '  '));
+      $('.js-result').text(JSON.stringify(data, null, '  '));
     });
   });
 });
