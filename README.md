@@ -49,6 +49,10 @@ This service is updated every few months and is usually accurate.
 
 Tracks Ported Numbers: NO
 
+<http://www.fonefinder.net/>
+
+<http://fonescout.com/revsearch.php>
+
 ```json
 { service "fonefinder.net" }
 ```
@@ -60,6 +64,8 @@ Submit bugs to this repo if the sms and mms gateways are incorrect.
 Requires an account. You can make 25 lookups for free.
 
 Tracks Ported Numbers: YES
+
+<http://www.data24-7.com/signup.php>
 
 ```json
 { service "data24-7.com"
@@ -75,6 +81,8 @@ You get 15 free lookups per ip address per 30 days.
 The service is updated daily.
 
 Tracks Ported Numbers: YES
+
+<http://www.freecarrierlookup.com/>
 
 ```json
 { service: "freecarrierlookup.com" }
