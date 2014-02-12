@@ -44,8 +44,9 @@ module.exports = function (request, jar, number, opts, fn) {
       carriers.lookup(number, lines[4], map);
       carriers.lookup(number, lines[5], map);
       //map.carrier = carriers.lookupBySmsGateway(map.smsGateway) || carriers.lookupByComment(lines[4]);
-      map.carrierComment = lines[4] + ' : ' + lines[5];
-      fn(null, map);
+      map.carrierComment = lines[4];
+      map.typeComment = lines[5];
+      fn(null, map, { authoritative: false });
     }
   ); 
 };
