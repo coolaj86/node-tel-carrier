@@ -3,6 +3,10 @@
 
   var connect = require('connect')
     , carriers = require('./carriersdb.json')
+    , Sequence = require('sequence').Sequence
+    , sequence = Sequence.create()
+    , TelCarrier = require('tel-carrier')
+    , telCarrier
     , cmap = {}
     , count = 0
     , inprogress = false
@@ -11,6 +15,8 @@
     , fs = require('fs')
     , server
     ;
+
+  telCarrier = TelCarrier.create({ service: 'fonefinder.net' });
 
   carriers.forEach(function (c) {
     cmap[c.carrierComment] = c;
@@ -59,8 +65,9 @@
   }
 
   server = connect.createServer()
-    .use(connect.json())
     .use(connect.compress())
+    .use(connect.static(path.join(__dirname, 'public')))
+    .use(connect.json())
     .use('/carriers', function (request, response, next) {
         if (request.method.match(/GET/i)) {
           response.setHeader('Content-Type', 'application/json');
@@ -77,6 +84,28 @@
         }
 
         next();
+      })
+    .use(connect.query())
+    .use('/lookup', function (request, response, next) {
+        if (!/\d{10}/.test(request.query.number)) {
+          next();
+          return;
+        }
+
+        sequence
+          .then(function (next) {
+            telCarrier.lookup(request.query.number, function (err, data) {
+              response.setHeader('Content-Type', 'application/json');
+              response.write(JSON.stringify(data, null, '  '));
+              response.end();
+              next();
+            });
+          })
+          .then(function (next) {
+            // only allow 1 request per second
+            setTimeout(next, 1000);
+          })
+          ;
       })
     ;
 

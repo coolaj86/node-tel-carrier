@@ -1,2 +1,17 @@
 [
+  {
+    "carrier": "verizon",
+    "carrierComment": "Verizon Wireless",
+    "wireless": true,
+    "smsGateway": "vtext.com",
+    "mmsGateway": "vzwpix.com"
+  },
+  {
+    "carrier": "verizon",
+    "carrierComment": "CELLCO PARTNERSHIP DBA VERIZON WIRELESS - UT",
+    "typeComment": "WIRELESS PROV",
+    "wireless": true,
+    "smsGateway": "vtext.com",
+    "mmsGateway": "vzwpix.com"
+  }
 ]
