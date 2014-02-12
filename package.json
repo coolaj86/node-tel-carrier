@@ -1,0 +1,37 @@
+{
+  "name": "tel-carrier",
+  "version": "1.0.0",
+  "description": "Lookup the carrier and sms / mms gateway email addresses for a given phone number",
+  "main": "tel-carrier",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/coolaj86/node-tel-carrier.git"
+  },
+  "keywords": [
+    "sms",
+    "mms",
+    "text",
+    "gateway",
+    "email",
+    "reverse",
+    "lookup",
+    "carrier",
+    "cell",
+    "tel",
+    "phone",
+    "call"
+  ],
+  "author": "AJ ONeal <coolaj86@gmail.com> (http://coolaj86.com/)",
+  "license": "Apache2",
+  "bugs": {
+    "url": "https://github.com/coolaj86/node-tel-carrier/issues"
+  },
+  "homepage": "https://github.com/coolaj86/node-tel-carrier",
+  "dependencies": {
+    "request": "~2.33.0",
+    "sequence": "~3.0.0"
+  }
+}
