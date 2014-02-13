@@ -1,5 +1,15 @@
 # tel-carriers
 
+# Install & Run Demo
+
+```bash
+git clone git@github.com:coolaj86/node-tel-carrier.git
+pushd node-tel-carrier
+git checkout demo-service
+jade server/public/index.jade
+node server
+```
+
 ## API
 
 ### GET /carriers
