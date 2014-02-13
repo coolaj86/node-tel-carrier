@@ -1,0 +1,24 @@
+{
+  "name": "tel-carrier-demo",
+  "version": "1.1.0",
+  "description": "A demo web service for tel-carrier",
+  "main": "server/index.js",
+  "dependencies": {
+    "sequence": "~3.0.0",
+    "tel-carrier": "~1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node server 3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/coolaj86/node-carrier-lookup.git"
+  },
+  "author": "",
+  "license": "Apache2",
+  "bugs": {
+    "url": "https://github.com/coolaj86/node-carrier-lookup/issues"
+  },
+  "homepage": "https://github.com/coolaj86/node-carrier-lookup"
+}
