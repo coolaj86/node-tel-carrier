@@ -6,6 +6,8 @@
 git clone git@github.com:coolaj86/node-tel-carrier.git
 pushd node-tel-carrier
 git checkout demo-service
+
+npm install
 jade server/public/index.jade
 node server
 ```
