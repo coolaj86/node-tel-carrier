@@ -13,5 +13,10 @@
     "wireless": true,
     "smsGateway": "vtext.com",
     "mmsGateway": "vzwpix.com"
+  },
+  {
+    "carrierComment": "BANDWIDTH.COM CLEC, LLC - IN",
+    "smsGateway": "",
+    "mmsGateway": ""
   }
 ]

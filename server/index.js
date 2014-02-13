@@ -110,4 +110,16 @@
     ;
 
   module.exports = server;
+
+  function run() {
+    var address
+      ;
+
+    address = server.listen(process.argv[2] || 0, function () {
+      console.log('Listening', address);
+    }).address();
+  }
+  if (require.main === module) {
+    run();
+  }
 }());
