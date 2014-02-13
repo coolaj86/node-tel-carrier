@@ -18,5 +18,17 @@
     "carrierComment": "BANDWIDTH.COM CLEC, LLC - IN",
     "smsGateway": "",
     "mmsGateway": ""
+  },
+  {
+    "carrierComment": "MCIMETRO ACCESS TRANSMISSION SERVICES LLC - UT",
+    "typeComment": "CLEC",
+    "smsGateway": "",
+    "mmsGateway": ""
+  },
+  {
+    "carrierComment": "T-MOBILE USA, INC.",
+    "typeComment": "CLEC",
+    "smsGateway": "",
+    "mmsGateway": ""
   }
 ]
