@@ -1,7 +1,7 @@
 node-tel-carrier
 ===================
 
-Lookup the carrier and sms / mms gateway email addresses for a given phone number.
+Lookup the carrier and sms / mms gateway email addresses for a given phone number through a variety of services.
 
 ## Installation & Usage
 
@@ -22,26 +22,41 @@ telCarrier = TelCarrier.create({
   service: 'freecarrierlookup.com'
 });
 
-telCarrier.lookup('5551234567', function (err, data) {
-  console.log(data);
+telCarrier.lookup('5551234567', function (err, info) {
+  console.log(info);
 });
-
-/*
-{ number: '5551234567',
-  wireless: true,
-  carrierComment: 'Verizon Wireless',
-  carrier: 'verizon',
-  smsGateway: '8013604427@vtext.com',
-  mmsGateway: '8013604427@vzwpix.com' }
-*/
 ```
+
+Example Output
+
+```javascript
+{ number: '5551234567'
+, wireless: true
+, carrierComment: 'Verizon Wireless'
+, carrier: 'verizon'
+, smsGateway: '5551234567@vtext.com'
+, mmsGateway: '5551234567@vzwpix.com'
+, updated: 0
+}
+```
+
+If `updated` exists it will be a timestamp in milliseconds.
 
 ## Services
 
   * freecarrierlookup.com
-  * fonefinder.com
+  * tel-carrier-cache
+  * fonefinder.net
   * data24-7.com
   * xminder.com
+
+### tel-carrier-cache
+
+This is a slightly massaged local copy of fonefinder.net.
+
+Tracks Ported Numbers: NO
+
+<http://tel-carrier.coolaj86.com>
 
 ### fonefinder.net
 

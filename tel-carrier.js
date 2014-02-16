@@ -1,60 +1,45 @@
 'use strict';
 
 var request = require('request')
-  , carr
-  , cmap
+  , allGateways
   ;
 
-request.get('http://tel-carrier.coolaj86.com/carriers', function (err, req, data) {
+request.get('http://tel-carrier.coolaj86.com/gateways', function (err, req, data) {
   try {
-    carr = JSON.parse(data);
+    allGateways = JSON.parse(data);
   } catch(e) {
     // ignore
-    carr = [];
+    allGateways = {};
   }
-
-  cmap = {};
-  carr.forEach(function (c) {
-    cmap[c.carrierComment] = c;
-  });
 });
 
-function updateRegistry(map, opts) {
+function updateRegistry(number, map, opts) {
   opts = opts || {};
-  if (!cmap) {
+
+  if (!allGateways) {
     setTimeout(function () {
-      updateRegistry(map, opts);
+      updateRegistry(number, map, opts);
     }, 500);
     return;
   }
 
-  if (!map || !map.carrierComment) {
-    return;
+  var data = { gateways: {}, numbers: {} }
+    ;
+
+  if ((map.smsGateway && !(allGateways[map.carrier]||{}).sms) || (map.mmsGateway && !(allGateways[map.carrier]||{}).mms)) {
+    data.gateways[map.carrier] = { sms: (map.smsGateway||'').replace(/.*@/, ''), mms: (map.mmsGateway||'').replace(/.*@/, '') };
   }
 
-  var json
-    ;
-    
-  json = {
-    carrier: map.carrier
-  , carrierComment: map.carrierComment
-  , typeComment: map.typeComment
-  , smsGateway: (map.smsGateway||'').replace(/.*@/, '')
-  , mmsGateway: (map.mmsGateway||'').replace(/.*@/, '')
-  , wireless: map.wireless
-  };
+  data.numbers[number] = { wireless: map.wireless, carrier: map.carrier };
 
   if (false === opts.authoritatize) {
-    // these values are inferred when non-authoritative
-    delete json.mmsGateway;
-    delete json.smsGateway;
-    delete json.carrier;
-    delete json.wireless;
-    json.authoritative = false;
+    delete data.gateways;
+    delete data.numbers[number].carrier;
+    delete data.numbers[number].wireless;
   }
 
-  cmap[json.carrierComment] = json;
-  request.post('http://tel-carrier.coolaj86.com/carriers', { json: json }, function (/*err, req, data*/) {
+  allGateways[map.carrier] = data.gateways[map.carrier];
+  request.post('http://tel-carrier.coolaj86.com/analytics', { json: data }, function (/*err, req, data*/) {
     // ignore
   });
 }
@@ -71,7 +56,7 @@ module.exports.create = function (opts) {
   return {
     lookup: function (number, fn) {
       service(request, jar, number, opts, function (err, map, opts) {
-        updateRegistry(map, opts);
+        updateRegistry(number, map, opts);
         fn(err, map);
       });
     }

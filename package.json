@@ -1,6 +1,6 @@
 {
   "name": "tel-carrier",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Lookup the carrier and sms / mms gateway email addresses for a given phone number",
   "main": "tel-carrier",
   "scripts": {
@@ -32,6 +32,7 @@
   "homepage": "https://github.com/coolaj86/node-tel-carrier",
   "dependencies": {
     "request": "~2.33.0",
-    "sequence": "~3.0.0"
+    "sequence": "~3.0.0",
+    "tel-carrier-db": "~1.1.0"
   }
 }
