@@ -109,7 +109,7 @@
   };
 
   Carriers._data = require('./carriersdb.json');
-  Carriers._cmap = {};
+  Carriers._map = {};
   Carriers._data.forEach(function (c) {
     Carriers._map[c.carrierComment] = c;
   });
@@ -117,7 +117,7 @@
     saveThing(path.join(__dirname, 'carriersdb.json'), Carriers._data);
   };
   Carriers.update = function (body) {
-    if (!body.carrierComment || Carriers._cmap[body.carrierComment]) {
+    if (!body.carrierComment || Carriers._map[body.carrierComment]) {
       return null;
     }
 
@@ -132,7 +132,7 @@
     c.mmsGateway = body.mmsGateway;
 
     Carriers._data.push(c);
-    Carriers._cmap[c.carrierComment] = c;
+    Carriers._map[c.carrierComment] = c;
     Carriers._save();
 
     return c;
