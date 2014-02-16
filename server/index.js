@@ -2,48 +2,122 @@
   "use strict";
 
   var connect = require('connect')
-    , carriers = require('./carriersdb.json')
-    , Sequence = require('sequence').Sequence
-    , sequence = Sequence.create()
+    , forEachAsync = require('foreachasync').forEachAsync
     , TelCarrier = require('tel-carrier')
     , telCarrier
-    , cmap = {}
-    , count = 0
-    , inprogress = false
-    , lock
     , path = require('path')
     , fs = require('fs')
     , server
+    , locks = {} 
+    , Gateways = {}
+    , Carriers = {}
+    , Numbers = {}
     ;
 
-  telCarrier = TelCarrier.create({ service: 'fonefinder.net' });
+  telCarrier = TelCarrier.create({ service: 'tel-carrier-cache' });
 
-  carriers.forEach(function (c) {
-    cmap[c.carrierComment] = c;
-  });
+  function saveThing(file, data) {
+    var lock
+      ;
 
-  function saveCarriers() {
-    count += 1;
+    lock = locks[file] = locks[file] || { count: 0, token: null, inprogress: false };
+    lock.count += 1;
 
-    if (inprogress) {
+    if (lock.inprogress) {
       return;
     }
 
-    if (count < 10) {
-      clearTimeout(lock);
+    if (lock.count < 10) {
+      clearTimeout(lock.token);
     }
 
-    lock = setTimeout(function () {
-      inprogress = true;
-      count = 0;
-      fs.writeFile(path.join(__dirname, 'carriersdb.json'), JSON.stringify(carriers, null, '  '), function () {
-        inprogress = false;
+    lock.token = setTimeout(function () {
+      lock.inprogress = true;
+      lock.count = 0;
+      fs.writeFile(file, JSON.stringify(data, null, '  '), function () {
+        lock.inprogress = false;
       });
     }, 5000);
   }
 
-  function updateCarriers(body) {
-    if (!body.carrierComment || cmap[body.carrierComment]) {
+  Gateways._data = require('./gatewaysdb.json');
+  Gateways._save = function () {
+    saveThing(path.join(__dirname, 'gatewaysdb.json'), Gateways._data);
+  };
+  Gateways.update = function (carrier, sms, mms) {
+    if (null !== sms && undefined !== sms && 'string' !== typeof sms) {
+      return;
+    }
+
+    if (null !== mms && undefined !== mms && 'string' !== typeof mms) {
+      return;
+    }
+
+    var gw = Gateways._data[carrier]
+      ;
+
+    if (!gw) {
+      gw = {};
+      Gateways._data[carrier] = gw;
+    }
+
+    if (!gw.sms) {
+      gw.sms = sms;
+      gw.updated = Date.now();
+    }
+
+    if (!gw.mms) {
+      gw.mms = mms;
+      gw.updated = Date.now();
+    }
+
+    Gateways._save();
+  };
+
+  Numbers._data = require('./numbersdb.json');
+  Numbers._save = function () {
+    saveThing(path.join(__dirname, 'numbersdb.json'), Numbers._data);
+  };
+  Numbers.update = function (number, carrier, wireless) {
+    if (!/(\+?1)?\d{3}\d{3}\d{4}/.test(number)) {
+      return;
+    }
+
+    if ((null !== typeof carrier && undefined !== carrier && 'string' !== typeof carrier) || carrier.length > 100) {
+      return;
+    }
+
+    var n = Numbers._data[number]
+      ;
+
+    if (!n) {
+      n = {};
+      Numbers._data[number] = n;
+    }
+    
+    if (!n.wireless || wireless) {
+      n.wireless = wireless;
+      n.updated = Date.now();
+    }
+
+    if (!n.carrier || carrier) {
+      n.carrier = carrier || n.carrier;
+      n.updated = Date.now();
+    }
+
+    Numbers._save();
+  };
+
+  Carriers._data = require('./carriersdb.json');
+  Carriers._cmap = {};
+  Carriers._data.forEach(function (c) {
+    Carriers._map[c.carrierComment] = c;
+  });
+  Carriers._save = function () {
+    saveThing(path.join(__dirname, 'carriersdb.json'), Carriers._data);
+  };
+  Carriers.update = function (body) {
+    if (!body.carrierComment || Carriers._cmap[body.carrierComment]) {
       return null;
     }
 
@@ -57,29 +131,79 @@
     c.smsGateway = body.smsGateway;
     c.mmsGateway = body.mmsGateway;
 
-    carriers.push(c);
-    cmap[c.carrierComment] = c;
-    saveCarriers();
+    Carriers._data.push(c);
+    Carriers._cmap[c.carrierComment] = c;
+    Carriers._save();
 
     return c;
+  };
+
+  function returnMany(numbers, cb) {
+    var result = []
+      ;
+
+    forEachAsync(numbers, function (next, number) {
+      telCarrier.lookup(number, function (err, info) {
+        result.push(info);
+        next();
+      });
+    }).then(function () {
+      cb(result);
+    });
   }
 
   server = connect.createServer()
     .use(connect.compress())
     .use(connect.static(path.join(__dirname, 'public')))
     .use(connect.json())
+    .use(function (request, response, next) {
+        if (response.send) {
+          next();
+          return;
+        }
+
+        response.send = function (data) {
+          response.setHeader('Content-Type', 'application/json');
+          response.write(JSON.stringify(data, null, '  '));
+          response.end();
+        };
+      })
+    .use('/analytics', function (request, response, next) {
+        if (!request.method.match(/POST/i) || !Object.keys(request.body).length) { 
+          next();
+          return;
+        }
+
+        if (request.body.numbers) {
+          Object.keys(request.body.numbers).forEach(function (number) {
+            Numbers.update(number, request.body.numbers[number].carrier, request.body.numbers[number].wireless);
+          });
+        }
+
+        if (request.body.carriers) {
+          Object.keys(request.body.carriers).forEach(function (carrier) {
+            Gateways.update(carrier, request.body.carriers[carrier].sms, request.body.carriers[carrier].mms);
+          });
+        }
+
+        response.send({ success: true });
+      })
+    .use('/gateways', function (request, response, next) {
+        if (request.method.match(/GET/i)) {
+          response.send(Gateways._data);
+          return;
+        }
+
+        next();
+      })
     .use('/carriers', function (request, response, next) {
         if (request.method.match(/GET/i)) {
-          response.setHeader('Content-Type', 'application/json');
-          response.write(JSON.stringify(carriers, null, '  '));
-          response.end();
+          response.send(Carriers._data);
           return;
         }
 
         if (request.method.match(/POST/i) && Object.keys(request.body).length) { 
-          response.setHeader('Content-Type', 'application/json');
-          response.write(JSON.stringify(updateCarriers(request.body), null, '  '));
-          response.end();
+          response.send(Carriers.update(request.body));
           return;
         }
 
@@ -87,25 +211,28 @@
       })
     .use(connect.query())
     .use('/lookup', function (request, response, next) {
-        if (!/\d{10}/.test(request.query.number)) {
+        if (!/POST/.test(request.method) || !Array.isArray(request.body)) {
           next();
           return;
         }
 
-        sequence
-          .then(function (next) {
-            telCarrier.lookup(request.query.number, function (err, data) {
-              response.setHeader('Content-Type', 'application/json');
-              response.write(JSON.stringify(data, null, '  '));
-              response.end();
-              next();
-            });
-          })
-          .then(function (next) {
-            // only allow 1 request per second
-            setTimeout(next, 1000);
-          })
-          ;
+        returnMany(request.body, response.send.bind(response));
+      })
+    .use('/lookup', function (request, response, next) {
+        if (request.query.numbers) {
+          returnMany(request.query.numbers.split(','), response.send.bind(response));
+          return;
+        }
+
+        if (!/(\+?1)?\d{10}/.test(request.query.number)) {
+          next();
+          return;
+        }
+
+        telCarrier.lookup(request.query.number, function (err, data) {
+          response.send(data);
+          next();
+        });
       })
     ;
 

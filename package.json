@@ -1,11 +1,11 @@
 {
   "name": "tel-carrier-demo",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A demo web service for tel-carrier",
   "main": "server/index.js",
   "dependencies": {
-    "sequence": "~3.0.0",
-    "tel-carrier": "~1.1.1"
+    "tel-carrier": "~1.1.1",
+    "foreachasync": "~3.0.0"
   },
   "devDependencies": {},
   "scripts": {
