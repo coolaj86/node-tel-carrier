@@ -62,8 +62,8 @@
     }
 
     if (!gw.sms) {
-      gw.sms = sms;
       gw.updated = Date.now();
+      gw.sms = sms;
     }
 
     if (!gw.mms) {
@@ -97,8 +97,8 @@
     }
     
     if (!n.wireless || wireless) {
-      n.wireless = wireless;
       n.updated = Date.now();
+      n.wireless = wireless;
     }
 
     if (!n.carrier || carrier) {
