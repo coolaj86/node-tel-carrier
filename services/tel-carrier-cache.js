@@ -11,6 +11,10 @@ module.exports = function (request, jar, number, opts, fn) {
     ;
 
   obj = telDb.lookup(1, parts[1], parts[2], parts[3]);
+  if (!obj) {
+    fn(new Error("'" + number + "' is not a valid phone number (area code + prefix not found in database)"), null);
+    return;
+  }
 
   map.number = number;
   map.wireless = obj.wireless;
