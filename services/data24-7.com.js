@@ -24,8 +24,15 @@ https://api.data24-7.com/v/2.0\?user\=coolaj86\&pass\=Wh1t3Ch3dd3r\&api\=T\&p1\=
 module.exports = function (request, jar, number, opts, fn) {
   // 11 digit number
   number = '1' + number;
+  var url = 'https://api.data24-7.com/v/2.0'
+    + '?user=' + opts.username
+    + '&pass=' + opts.password
+    + '&api=T&p1=' + number
+    + '&out=json'
+    ;
+
   request.get(
-    'https://api.data24-7.com/v/2.0?user=' + opts.username + '&pass=' + opts.password + ' + &api=T&p1=' + number + '&out=json'
+    url
   , { jar: jar }
   , function (err, req, data) {
       var r
@@ -40,10 +47,10 @@ module.exports = function (request, jar, number, opts, fn) {
         }
       }
 
-      r = data && data.response && data.response.results;
+      r = data && data.response && data.response.results[0];
 
       if (!r) {
-        fn(data);
+        fn(data, null);
         return;
       }
 
@@ -52,8 +59,8 @@ module.exports = function (request, jar, number, opts, fn) {
       , wireless: 'y' === r.wless
       , carrier: carriers.lookupBySmsGateway(r.sms_address) || carriers.lookupByComment(r.carrier_name)
       , carrierComment: r.carrier_name
-      , smsGateaway: r.sms_address
-      , mmsGateaway: r.mms_address
+      , smsGateway: r.sms_address
+      , mmsGateway: r.mms_address
       });
     }
   );
