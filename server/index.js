@@ -160,8 +160,7 @@
         return;
       }
 
-      number = valNum[1];
-      //number = valNum[1];
+      number = valNum;
       telCarrier.lookup(number, function (err, info) {
         if (info) {
           result.push(info);
