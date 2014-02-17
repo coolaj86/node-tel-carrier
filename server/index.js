@@ -79,7 +79,8 @@
     saveThing(path.join(__dirname, 'numbersdb.json'), Numbers._data);
   };
   Numbers.update = function (number, carrier, wireless) {
-    if (!/(\+?1)?\d{3}\d{3}\d{4}/.test(number)) {
+    number = normalizeNumber(number);
+    if (!number) {
       return;
     }
 
@@ -138,13 +139,33 @@
     return c;
   };
 
+  function normalizeNumber(number) {
+    var valNum = /(?=\+?1)?(\d{10})$/.exec(String(number))
+      ;
+
+    return valNum && ('+1' + valNum[1]);
+  }
+
   function returnMany(numbers, cb) {
     var result = []
       ;
 
     forEachAsync(numbers, function (next, number) {
+      // sometimes '+' becomes ' ' or '%20'
+      var valNum = normalizeNumber(number) 
+        ;
+
+      if (!valNum) {
+        next();
+        return;
+      }
+
+      number = valNum[1];
+      //number = valNum[1];
       telCarrier.lookup(number, function (err, info) {
-        result.push(info);
+        if (info) {
+          result.push(info);
+        }
         next();
       });
     }).then(function () {
@@ -167,6 +188,7 @@
           response.write(JSON.stringify(data, null, '  '));
           response.end();
         };
+        next();
       })
     .use('/analytics', function (request, response, next) {
         if (!request.method.match(/POST/i) || !Object.keys(request.body).length) { 
@@ -211,12 +233,12 @@
       })
     .use(connect.query())
     .use('/lookup', function (request, response, next) {
-        if (!/POST/.test(request.method) || !Array.isArray(request.body)) {
+        if (!/POST/.test(request.method) || !Array.isArray(request.body.numbers)) {
           next();
           return;
         }
 
-        returnMany(request.body, response.send.bind(response));
+        returnMany(request.body.numbers, response.send.bind(response));
       })
     .use('/lookup', function (request, response, next) {
         if (request.query.numbers) {
@@ -229,9 +251,8 @@
           return;
         }
 
-        telCarrier.lookup(request.query.number, function (err, data) {
-          response.send(data);
-          next();
+        returnMany(request.query.numbers.split(','), function (arr) {
+          response.send(arr[0] || null);
         });
       })
     ;

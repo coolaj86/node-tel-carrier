@@ -14,49 +14,63 @@ node server
 
 ## API
 
-### GET /carriers
+### GET /lookup?numbers=8013605555,8012705555
 
-A full list of all carriers in the system based on their comment
+Get info about said numbers.
 
 ```bash
-curl http://tel-carrier.coolaj86.com/carriers
+curl http://tel-carrier.coolaj86.com/lookup?numbers=8013605555
 ```
 
 ```json
 [
-  { "carrier": "verizon"
-  , "carrierComment": "Billy Telco DBA Verizon Wireless"
-  , "typeComment": "Wireless Prov"
-  , "wireless": true
-  , "smsGateway": "vtext.com"
-  , "mmsGateway": "vpix.com"
+  {
+    "number": "+18013605555",
+    "wireless": true,
+    "carrier": "verizon",
+    "smsGateway": "8013605555@vtext.com",
+    "mmsGateway": "8013605555@vzwpix.com",
+    "carrierComment": "Verizon",
+    "typeComment": "WIRELESS PROV"
   }
 ]
 ```
 
-### POST /carriers
+### GET /gateways
+
+A full list of all gateways in the system
+
+```bash
+curl http://tel-carrier.coolaj86.com/gateways
+```
+
+```json
+{ "verizon":
+  { "sms": "vtext.com"
+  , "mms": "vpix.com"
+  }
+}
+```
+
+### POST /analytics
 
 Update the carriers list
 
 ```bash
-curl http://tel-carrier.coolaj86.com/carriers \
+curl http://tel-carrier.coolaj86.com/analytics \
+  -X POST
   -H 'Content-Type: application/json' \
-  -d '{ "carrierComment": "Billy Telco DBA Verizon Wireless"
-      , "typeComment": "Wireless Prov"
-      , "wireless": true
-      , "smsGateway": "vtext.com"
-      , "mmsGateway": "vpix.com"
+  -d '{ "gateways":
+          { "verizon":
+            { "sms": "vtext.com"
+            , "mms": "vpix.com"
+            }
+          }
+      , "numbers": {
+          "+18013605555":
+          { "carrier": "verizon"
+          , "wireless": true
+          }
+        }
       }'
-```
-
-You'll get back what was updated or `null`
-
-```json
-{ "carrier": "verizon"
-, "carrierComment": "Billy's Telco DBA Verizon Wireless"
-, "typeComment": "Wireless Prov"
-, "wireless": true
-, "smsGateway": "vtext.com"
-, "mmsGateway": "vpix.com"
-}
 ```
