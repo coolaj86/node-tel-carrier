@@ -1,18 +1,21 @@
 doctype html
 html
   head
-    title tel-carrier demo
+    title Cell Carrier Lookup
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
     script(src="app.js")
   body
-    h1 Tel Carrier Demo
+    h1 Cell Carrier Lookup
 
+    
     form.js-form
       div
-        label Phone Number:
-        input.js-number(pattern="[0-9]{10}")
+        label List Phone Numbers (comma or newline separated):
+        //- input.js-number(pattern="[0-9]{10}")
       div
-        button(type="submit") Lookup Carrier
+        textarea.js-numbers(placeholder="numbers may be in in any common US format such as '+15551234567', '(555) 123-4567', '1.555.123.4567', etc", rows="30", cols="40")
+      div
+        button(type="submit") Lookup Carriers
 
     div
       h2 Result
