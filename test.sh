@@ -17,7 +17,7 @@ function updateAnalytics() {
     -X POST \
     -H 'Content-Type: application/json' \
     -d '{ "numbers": { "+17578805555": { "carrier": "verizon", "wireless": true } }
-        , "carriers": { "verizon": { "sms": "vtext.com", "mms": "vzpix.com" } }
+        , "carriers": { "verizon": { "sms": "vtext.com", "mms": "vzwpix.com" } }
         }'
 }
 updateAnalytics
