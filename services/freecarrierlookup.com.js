@@ -31,7 +31,7 @@ module.exports = function (request, jar, number, opts, fn) {
 
       fn(null, {
         number: map['Phone Number']
-      , wireless: 'n' !== map['Is Wireless']
+      , wireless: 'y' === map['Is Wireless']
       , carrier: carriers.lookupBySmsGateway(map['SMS Gateway Address']) || carriers.lookupByComment(map.Carrier)
       , carrierComment: map.Carrier
       , smsGateway: map['SMS Gateway Address']
