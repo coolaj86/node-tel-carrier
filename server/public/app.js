@@ -9,6 +9,7 @@ $(function () {
       , lines
       , numbers = []
       , formatted = []
+      , getUrl = '/lookup?numbers='
       ;
 
     console.log('text', text);
@@ -30,9 +31,21 @@ $(function () {
     
     $('.js-numbers').val(formatted.join('\n'));
 
-    $.get('/lookup?numbers=' + numbers.join(','), function (data) {
+    function onResult(data) {
       console.log('data.length', data.length);
       $('.js-result').text(JSON.stringify(data, null, '  '));
-    });
+    }
+
+    // if total url length exceeds 2000, use a POST (10 digits + ',' === 11)
+    if (getUrl.length + (numbers.length * 11) > 2000) {
+      $.ajax('/lookup', 
+      { data: JSON.stringify({ numbers: numbers })
+      , contentType: 'application/json'
+      , success: onResult
+      , type: 'POST'
+      });
+    } else {
+      $.get(getUrl + numbers.join(','), onResult);
+    }
   });
 });
