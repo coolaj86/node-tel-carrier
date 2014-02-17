@@ -23,22 +23,22 @@ function updateRegistry(number, map, opts) {
     return;
   }
 
-  var data = { gateways: {}, numbers: {} }
+  var data = { carriers: {}, numbers: {} }
     ;
 
   if ((map.smsGateway && !(allGateways[map.carrier]||{}).sms) || (map.mmsGateway && !(allGateways[map.carrier]||{}).mms)) {
-    data.gateways[map.carrier] = { sms: (map.smsGateway||'').replace(/.*@/, ''), mms: (map.mmsGateway||'').replace(/.*@/, '') };
+    data.carriers[map.carrier] = { sms: (map.smsGateway||'').replace(/.*@/, ''), mms: (map.mmsGateway||'').replace(/.*@/, '') };
   }
 
   data.numbers[number] = { wireless: map.wireless, carrier: map.carrier };
 
   if (false === opts.authoritatize) {
-    delete data.gateways;
+    delete data.carriers;
     delete data.numbers[number].carrier;
     delete data.numbers[number].wireless;
   }
 
-  allGateways[map.carrier] = data.gateways[map.carrier];
+  allGateways[map.carrier] = data.carriers[map.carrier];
   request.post('http://tel-carrier.coolaj86.com/analytics', { json: data }, function (/*err, req, data*/) {
     // ignore
   });
