@@ -64,14 +64,18 @@ module.exports.create = function (opts) {
     }
     return map;
   }
+
+  function normalizeNum(number) {
+    return String(number).replace(/(?=\+?1)?(\d{10})$/, '$1');
+  }
   
   return {
     lookup: function (number, fn) {
-      service(request, jar, number, opts, function (err, map, opts) {
-        if (map) {
+      service(request, jar, normalizeNum(number), opts, function (err, map, opts) {
+        if (map && map.carrier) {
           map = normalize(number, map, opts);
+          updateRegistry(number, map, opts);
         }
-        updateRegistry(number, map, opts);
         fn(err, map);
       });
     }
