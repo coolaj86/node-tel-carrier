@@ -52,10 +52,25 @@ module.exports.create = function (opts) {
 
   services = require('./services');
   service = services[opts.service];
+
+  // TODO move
+  function normalize(number, map/*, opts*/) {
+    map.number = '+1' + /(?=\+?1)?(\d{10})$/.exec(String(map.number))[1];
+    if (map.smsGateway) {
+      map.smsGateway = map.number.replace(/^\+1/, '') + map.smsGateway.replace(/.*@/, '@');
+    }
+    if (map.mmsGateway) {
+      map.mmsGateway = map.number.replace(/^\+1/, '') + map.mmsGateway.replace(/.*@/, '@');
+    }
+    return map;
+  }
   
   return {
     lookup: function (number, fn) {
       service(request, jar, number, opts, function (err, map, opts) {
+        if (map) {
+          map = normalize(number, map, opts);
+        }
         updateRegistry(number, map, opts);
         fn(err, map);
       });

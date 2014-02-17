@@ -16,6 +16,7 @@ telCarrier = TelCarrier.create({
   //service: "freecarrierlookup.com"
   //service: "data24-7.com"
   //service: "fonefinder.net"
+  //service: "tel-carrier-cache"
   service: servicename
 });
 
