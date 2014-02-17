@@ -32,7 +32,7 @@ function updateRegistry(number, map, opts) {
 
   data.numbers[number] = { wireless: map.wireless, carrier: map.carrier };
 
-  if (false === opts.authoritatize) {
+  if (false === opts.authoritative) {
     delete data.carriers;
     delete data.numbers[number].carrier;
     delete data.numbers[number].wireless;
