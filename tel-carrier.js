@@ -38,7 +38,9 @@ function updateRegistry(number, map, opts) {
     delete data.numbers[number].wireless;
   }
 
-  allGateways[map.carrier] = data.carriers[map.carrier];
+  if (data.carriers) {
+    allGateways[map.carrier] = data.carriers[map.carrier];
+  }
   request.post('http://tel-carrier.coolaj86.com/analytics', { json: data }, function (/*err, req, data*/) {
     // ignore
   });
