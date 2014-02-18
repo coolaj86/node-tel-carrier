@@ -17,6 +17,8 @@ carriers =
 , require('./powertel')
 , require('./alltel')
 , require('./metropcs')
+, require('./cricket')
+, require('./boost')
 ];
 
 function lookupByComment(comment) {
@@ -63,7 +65,7 @@ function lookup(number, type, map) {
 
   carriers.some(function (carrier) {
     function isWireless(number, string) {
-      if (/wireless/i.test(string)) {
+      if (/wireless|pcs|cellular/i.test(string)) {
         return true;
       }
     }
@@ -75,17 +77,19 @@ function lookup(number, type, map) {
       return re.test(string);
     }
 
-    if ((carrier.isWireless||isWireless)(number, ctype)) {
-      map.wireless = true;
-    }
-
-    if (map.wireless && (carrier.test||test)(number, ctype)) {
-      map.carrier = carrier.name;
-      if (carrier.smsGateway) {
-        map.smsGateway = number + '@' + carrier.smsGateway; 
+    if ((carrier.test||test)(number, ctype)) {
+      if ((carrier.isWireless||isWireless)(number, ctype)) {
+        map.wireless = true;
       }
-      if (carrier.mmsGateway) {
-        map.mmsGateway = number + '@' + carrier.mmsGateway; 
+
+      map.carrier = carrier.name;
+      if (map.wireless) {
+        if (carrier.smsGateway) {
+          map.smsGateway = number + '@' + carrier.smsGateway; 
+        }
+        if (carrier.mmsGateway) {
+          map.mmsGateway = number + '@' + carrier.mmsGateway; 
+        }
       }
 
       return true;

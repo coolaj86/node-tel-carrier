@@ -114,3 +114,11 @@ Without an account you can lookup 5 numbers for free.
 ```
 
 Note: there's an API key or a username / password, but their api sign-up didn't work when I tried.
+
+### carrierlookup.com
+
+**Not Yet Implemented**
+
+<https://www.carrierlookup.com/index.php/cpanel/apikeys>
+
+<http://www.carrierlookup.com/index.php/api/lookup?key={#api_key}&number={#phone_number}>

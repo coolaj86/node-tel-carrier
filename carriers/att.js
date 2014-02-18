@@ -5,5 +5,10 @@ module.exports = {
 , smsGateway: 'txt.att.net'
 , mmsGateway: 'mms.att.net'
 , isWireless: null
-, test: null
+, test: function test(number, string) {
+    var re = /\bAT\s*&?\s*T\b/i
+      ;
+
+    return re.test(string);
+  }
 };

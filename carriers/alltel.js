@@ -2,7 +2,7 @@
 
 module.exports = {
   name: 'alltel'
-, smsGateway: 'message.alltel.com'
+, smsGateway: 'text.wireless.alltel.com' || 'message.alltel.com'
 , mmsGateway: null
 , isWireless: null
 , test: null
