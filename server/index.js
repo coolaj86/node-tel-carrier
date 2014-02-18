@@ -242,17 +242,13 @@
     .use('/lookup', function (request, response, next) {
         if (request.query.numbers) {
           returnMany(request.query.numbers.split(','), response.send.bind(response));
-          return;
-        }
-
-        if (!/(\+?1)?\d{10}/.test(request.query.number)) {
+        } else if (request.query.number) {
+          returnMany([request.query.number], function (arr) {
+            response.send(arr[0] || null);
+          });
+        } else {
           next();
-          return;
         }
-
-        returnMany(request.query.numbers.split(','), function (arr) {
-          response.send(arr[0] || null);
-        });
       })
     ;
 
