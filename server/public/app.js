@@ -64,18 +64,26 @@ $(function () {
         } else if (!a.smsGateway && b.smsGateway) {
           return 2;
         } else {
-          if (a.number > b.number) {
+          if ((a.carrier || a.carrierComment).toLowerCase() > (b.carrier || b.carrierComment).toLowerCase()) {
             return 1;
-          } else if (b.number > a.number) {
+          } else if ((b.carrier || b.carrierComment).toLowerCase() > (a.carrier || a.carrierComment).toLowerCase()) {
             return -1;
           } else {
-            return 0;
+            if (a.number > b.number) {
+              return 0.5;
+            } else if (b.number > a.number) {
+              return -0.5;
+            } else {
+              return 0;
+            }
+
           }
         }
       }
       data.sort(smsFirst).forEach(function (info) {
-        log(info.smsGateway || ('<b>' + info.number + ' - ' + (info.carrier || info.carrierComment) + '</b>'));
+        log(info.smsGateway || ('<b>' + info.number + ' - ' + (info.carrier || info.carrierComment).substr(0, 20) + '</b>'));
       });
+      $('code.js-results').html(JSON.stringify(data, null, '  '));
     });
   }
 
