@@ -8,16 +8,17 @@ html
     h1 Cell Carrier Lookup
 
     
-    form.js-form
-      div
-        label List Phone Numbers (comma or newline separated):
-        //- input.js-number(pattern="[0-9]{10}")
-      div
-        textarea.js-numbers(placeholder="numbers may be in in any common US format such as '+15551234567', '(555) 123-4567', '1.555.123.4567', etc", rows="30", cols="40")
-      div
-        button(type="submit") Lookup Carriers
+    div(style="float: left;")
+      form.js-form
+        div
+          h2 Past Numbers
+          button(type="submit") Lookup Carriers
+        div
+          textarea.js-numbers(placeholder="numbers may be in in any common US format such as '+15551234567', '(555) 123-4567', '1.555.123.4567', etc", rows="30", cols="40")
 
-    div
-      h2 Result
-    pre
-      code.js-result
+    div(style="float: left;")
+      div
+        h2 Result
+      pre
+        code.js-result
+      table

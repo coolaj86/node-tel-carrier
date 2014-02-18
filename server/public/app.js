@@ -1,51 +1,73 @@
 $(function () {
   'use strict';
 
+  var rePhone = /(?=^|\D)(\+?1)?\s*[\-\.]?\s*\(?\s*(\d{3})\s*\)?\s*[\-\.]?\s*(\d{3})\s*[\-\.]?\s*(\d{4})(?=\D|$)/g
+    ;
+
+  function log(redThing) {
+    $('table').append('<tr><td>' + redThing + '</td></tr>\n');
+    //$('table').append('<tr><td>' + redThing + '</td><td>' + (blueThing || '') + '</td></tr>\n');
+  }
+
+  function getNumbers(numbers) {
+    var getUrl = '/lookup?numbers='
+      ;
+
+    // if total url length exceeds 2000, use a POST (10 digits + ',' === 11)
+    if (getUrl.length + (numbers.length * 11) > 2000) {
+      return $.ajax('/lookup', 
+      { data: JSON.stringify({ numbers: numbers })
+      , contentType: 'application/json'
+      , type: 'POST'
+      });
+    } else {
+      return $.get(getUrl + numbers.join(','));
+    }
+  }
+
+  function doWork() {
+    var parts
+      , text = $('textarea.js-numbers').val()
+      , numbers = []
+      , numbersMap = {}
+      , formatted = []
+      , onesies = []
+      , phone
+      , onesie
+      ;
+    
+    while ((parts = rePhone.exec(text)) !== null) {
+      phone = '(' + parts[2] + ') ' + parts[3] + '-' + parts[4];
+      onesie = parts[2].toString() + parts[3] + parts[4];
+
+      if (!numbersMap[phone]) {
+        numbersMap[phone] = true;
+        numbers.push(parts);
+        formatted.push(phone);
+        onesies.push(onesie);
+      }
+    }
+
+    $('table').html('');
+    log('total numbers found:' + numbers.length);
+    formatted.sort().forEach(function (phone) {
+      log(phone);
+    });
+
+    getNumbers(onesies).then(function (data) {
+      console.log('data.length', data.length);
+      $('table').html('');
+      log('info.number', 'info.smsGateway');
+      data.forEach(function (info) {
+        log(info.smsGateway || ('<b>' + info.number + ' - ' + (info.carrier || info.carrierComment) + '</b>'));
+      });
+    });
+  }
+
   $('body').on('submit', '.js-form', function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
 
-    var text = $('textarea.js-numbers').val()
-      , lines
-      , numbers = []
-      , formatted = []
-      , getUrl = '/lookup?numbers='
-      ;
-
-    console.log('text', text);
-    lines = text.split(/\s*[,\n]+\s*/);
-    console.log('lines.length', lines.length);
-    lines.forEach(function (line) {
-      var parts = /\s*(?=\+?\s*1)?[\-\.\(\s]*(\d{3})[\-\.\)\s]*(\d{3})[\-\.\s]*(\d{4})\s*(?=\D|$)/.exec(line)
-        ;
-
-      if (!parts) {
-        console.warn(line);
-        return;
-      }
-
-      numbers.push(parts[1].toString() + parts[2] + parts[3]);
-      formatted.push('(' + parts[1] + ') ' + parts[2] + '-' + parts[3]);
-    });
-    console.log('numbers.length', numbers.length);
-    
-    $('.js-numbers').val(formatted.join('\n'));
-
-    function onResult(data) {
-      console.log('data.length', data.length);
-      $('.js-result').text(JSON.stringify(data, null, '  '));
-    }
-
-    // if total url length exceeds 2000, use a POST (10 digits + ',' === 11)
-    if (getUrl.length + (numbers.length * 11) > 2000) {
-      $.ajax('/lookup', 
-      { data: JSON.stringify({ numbers: numbers })
-      , contentType: 'application/json'
-      , success: onResult
-      , type: 'POST'
-      });
-    } else {
-      $.get(getUrl + numbers.join(','), onResult);
-    }
+    doWork();
   });
 });
