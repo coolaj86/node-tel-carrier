@@ -58,7 +58,22 @@ $(function () {
       console.log('data.length', data.length);
       $('table').html('');
       log('info.number', 'info.smsGateway');
-      data.forEach(function (info) {
+      function smsFirst(a, b) {
+        if (a.smsGateway && !b.smsGateway) {
+          return -2;
+        } else if (!a.smsGateway && b.smsGateway) {
+          return 2;
+        } else {
+          if (a.number > b.number) {
+            return 1;
+          } else if (b.number > a.number) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      }
+      data.sort(smsFirst).forEach(function (info) {
         log(info.smsGateway || ('<b>' + info.number + ' - ' + (info.carrier || info.carrierComment) + '</b>'));
       });
     });
