@@ -60,7 +60,7 @@ function lookupBySmsGateway(gateway) {
 }
 
 function lookup(number, type, map) {
-  var ctype = (type||'').toLowerCase().replace(/\s+/g, '')
+  var ctype = (type||'').replace(/-/, '').replace(/\s+/g, ' ')
     ;
 
   carriers.some(function (carrier) {

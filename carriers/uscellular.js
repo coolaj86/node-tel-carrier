@@ -6,7 +6,7 @@ module.exports = {
 , mmsGateway: null
 , isWireless: function () { return true; }
 , test: function (number, string) {
-    var re = /\b(u\.?s\.?\s*cellular)|(united\s*states\s*cellular)\b/i
+    var re = /\b((u\.?s\.?\s*cellular)|(united\s*states\s*cellular))\b/i
       ;
 
     return re.test(string);
