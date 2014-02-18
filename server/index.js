@@ -262,7 +262,7 @@
     var address
       ;
 
-    address = server.listen(process.argv[2] || 0, function () {
+    address = server.listen(process.argv[2] || 3010, function () {
       console.log('Listening', address);
     }).address();
   }
