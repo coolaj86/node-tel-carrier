@@ -4,6 +4,7 @@
   var connect = require('connect')
     , forEachAsync = require('foreachasync').forEachAsync
     , TelCarrier = require('tel-carrier')
+    , mailRoute = require('./mail-route').route
     , telCarrier
     , path = require('path')
     , fs = require('fs')
@@ -13,6 +14,10 @@
     , Carriers = {}
     , Numbers = {}
     ;
+
+  if (!connect.router) {
+    connect.router = require('connect_router');
+  }
 
   telCarrier = TelCarrier.create({ service: 'tel-carrier-cache' });
 
@@ -251,6 +256,8 @@
         }
       })
     ;
+
+  server.use(connect.router(mailRoute));
 
   module.exports = server;
 

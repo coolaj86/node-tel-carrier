@@ -74,3 +74,5 @@ curl http://tel-carrier.coolaj86.com/analytics \
         }
       }'
 ```
+
+Note on email gateways: <http://stackoverflow.com/questions/1179854/limitations-on-sms-messages-sent-using-free-email-sms-gateways>
