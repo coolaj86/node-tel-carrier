@@ -221,7 +221,7 @@ $(function () {
     }
 
     if ('unsupported' === provider) {
-      window.alert('Try creating a free gmail account');
+      window.alert("Your email provider isn't supported. Try creating a free gmail account");
       return;
     }
 
@@ -242,7 +242,7 @@ $(function () {
       if (data.success) {
         window.alert('Sent your message. :-)');
       } else {
-        window.alert('Error: ' + data.err);
+        window.alert('Error: ' + data.error.data);
       }
     });
   });

@@ -64,9 +64,10 @@ function route(app) {
         console.log('\n[opts]');
         console.log(opts);
 
+        console.error(err.toString());
         console.error(err);
 
-        res.send({ error: err });
+        res.send(err);
       });
     });
   });
