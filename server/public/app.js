@@ -200,6 +200,11 @@ $(function () {
       return;
     }
 
+    if (data.sms.length > 140) {
+      window.alert("A little too wordy, don't you think? Cut the fat and try again.");
+      return;
+    }
+
     if (0 === data.numbers.length) {
       window.alert("Awww... how cute, you don't have any friends to send you message to.");
       return;
