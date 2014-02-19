@@ -13,8 +13,9 @@ html
       .row
         .col-md-12
           h2 Text for Free
-          p This free tool allows you to text a group of people using your email address.
+          p This free tool allows you to text a group of people - such as a church, boyscout troup, clients at a small business, etc - using your email address.
           p To prevent spam we require you to provide your phone number and send the messages from your own e-mail account.
+          p This free service is accurate for about 70% of numbers as it is based on publically available records (like whitepages.com) that are often out-of-date.
 
       .row
         form.js-msg-form(role="form")
@@ -42,6 +43,16 @@ html
               .form-group
                 label Email Address:
                 input(name="email", type="email", required="required")
+                select(name="provider")
+                  optgroup(label="Major Email Providers")
+                    option(value="auto", selected) Automatically Detected
+                  optgroup(label="Custom Hosted Domains")
+                    option(value="other") -- CHOOSE ONE --
+                    option(value="Gmail") Google Apps / GMail
+                    option(value="Hotmail") Microsoft / Outlook.com
+                    option(value="Yahoo") Yahoo Business Email
+                    option(value="Zoho") Zoho
+                    option(value="unsupported") Unsupported
                 p Only gmail.com, yahoo.com, hotmail.com, live.com, and msn.com are supported at this time.
               .form-group
                 label Email Password:

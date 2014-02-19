@@ -51,6 +51,11 @@ $(function () {
       lock = false;
     }
 
+    if (0 === newNumbers.length) {
+      gotNumbers([]);
+      return;
+    }
+
     // if total url length exceeds 2000, use a POST (10 digits + ',' === 11)
     if (getUrl.length + (newNumbers.length * 11) > 2000) {
       $.ajax('/lookup', 
@@ -72,9 +77,11 @@ $(function () {
       , onesie
       , numbers = []
       , numbersMap = {}
+        // must be new RegExp each time, btw
+      , rePhoneLoop = new RegExp(rePhone)
       ;
 
-    while ((parts = rePhone.exec(text)) !== null) {
+    while ((parts = rePhoneLoop.exec(text)) !== null) {
       phone = '(' + parts[2] + ') ' + parts[3] + '-' + parts[4];
       onesie = parts[2].toString() + parts[3] + parts[4];
 
@@ -118,10 +125,28 @@ $(function () {
     }
   }
 
+  function selectEmail() {
+    var email = $('[name="email"]').val()
+      , provider = $('[name="provider"]').val()
+      ;
+
+    if (/@(gmail|hotmail|live|outlook|msn|yahoo|ymail)\.com/i.test(email)) {
+      provider = 'auto';
+      $('[name="provider"]').val(provider);
+      return;
+    }
+
+    if ('auto' === provider) {
+      $('[name="provider"]').val('other');
+    }
+  }
+
   function doWork(onesies, fn) {
     getNumbers(onesies, function (data, badNums) {
-      console.error('bad numbers', badNums.length);
-      console.error('bad numbers', badNums);
+      if (badNums.length) {
+        console.error('bad numbers', badNums.length);
+        console.error('bad numbers', badNums);
+      }
       console.log('data.length', data.length);
       $('table').html('');
       log('info.number', 'info.smsGateway');
@@ -136,7 +161,7 @@ $(function () {
       $('code.js-results').html(JSON.stringify(data, null, '  '));
 
       if (fn) {
-        fn(data);
+        fn(data, badNums);
       }
     });
   }
@@ -153,14 +178,53 @@ $(function () {
     ev.stopPropagation();
 
     var data = {}
+      , provider = $('[name="provider"]').val()
+        // must be a new instance each exec
+      , phone = new RegExp(rePhone).exec($('input[name="phone"]').val())
       ;
 
-    data.phone = $('input[name="phone"]').val();
+    data.phone = phone && (phone[2].toString() + phone[3] + phone[4]);
     data.email = $('input[name="email"]').val();
     data.password = $('input[name="password"]').val();
     data.numbers = parseNumbers();
     data.emails = [];
-    data.sms = $('textarea[name="sms"]');
+    data.sms = $('textarea[name="sms"]').val();
+
+    if (!data.email || !data.password) {
+      window.alert("We don't send messages from our own server. We need your email address and password because the text messages will be sent using your email. We won't send you spam or store your password.");
+      return;
+    }
+
+    if (!data.sms) {
+      window.alert("Awww... how cute, you tried to send an empty message to your friends.");
+      return;
+    }
+
+    if (0 === data.numbers.length) {
+      window.alert("Awww... how cute, you don't have any friends to send you message to.");
+      return;
+    }
+
+    if (!data.phone) {
+      window.alert("To prevent spam we require a valid phone number");
+      return;
+    }
+
+    if ('other' === provider) {
+      window.alert('Please select your email service provider');
+      return;
+    }
+
+    if ('unsupported' === provider) {
+      window.alert('Try creating a free gmail account');
+      return;
+    }
+
+    if ('auto' !== provider) {
+      data.service = provider;
+    }
+
+    console.log(data);
 
     $.ajax('/sms', 
       { data: JSON.stringify(data)
@@ -170,6 +234,11 @@ $(function () {
     ).then(function (data) {
       // should have deliverable and undeliverable
       console.log(data);
+      if (data.success) {
+        window.alert('Sent your message. :-)');
+      } else {
+        window.alert('Error: ' + data.err);
+      }
     });
   });
 
@@ -188,6 +257,25 @@ $(function () {
     } else {
       $('.js-msg-length').css({ color: 'black' });
     }
+  });
+
+  $('body').on('change', '[name="provider"]', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    selectEmail();
+  });
+  $('body').on('change', '[name="email"]', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    selectEmail();
+  });
+  $('body').on('keyup', '[name="email"]', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    selectEmail();
   });
 
   $('body').on('keyup', 'textarea[name="numbers"]', function (ev) {

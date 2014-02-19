@@ -65,6 +65,8 @@ function route(app) {
         console.log(opts);
 
         console.error(err);
+
+        res.send({ error: err });
       });
     });
   });
