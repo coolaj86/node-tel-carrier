@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    title Cell Carrier Lookup
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
+    script(src="app.js")
+  body
+    h1 Cell Carrier Lookup
+
+    
+    div(style="float: left;")
+      form.js-form
+        div
+          h2 Past Numbers
+          button(type="submit") Lookup Carriers
+        div
+          textarea.js-numbers(placeholder="numbers may be in in any common US format such as '+15551234567', '(555) 123-4567', '1.555.123.4567', etc", rows="30", cols="40")
+
+    div(style="float: left;")
+      div
+        h2 Result
+      table
+    div(style="float: left;")
+      div
+        h2 Raw
+      pre
+        code.js-results
