@@ -1,10 +1,49 @@
 'use strict';
 
 var nodemailer = require('nodemailer')
+  , forEachAsync = require('foreachasync').forEachAsync
+  , TelCarrier = require('tel-carrier')
+  , telCarrier
   ;
 
+telCarrier = TelCarrier.create({ service: 'tel-carrier-cache' });
+
+function normalizeNumber(number) {
+  var valNum = /(?=\+?1)?(\d{10})$/.exec(String(number))
+    ;
+
+  return valNum && ('+1' + valNum[1]);
+}
+
+function returnMany(numbers, cb) {
+  var result = []
+    ;
+
+  forEachAsync(numbers, function (next, number) {
+    // sometimes '+' becomes ' ' or '%20'
+    var valNum = normalizeNumber(number) 
+      ;
+
+    if (!valNum) {
+      next();
+      return;
+    }
+
+    number = valNum;
+    telCarrier.lookup(number, function (err, info) {
+      if (info) {
+        result.push(info);
+      }
+      next();
+    });
+  }).then(function () {
+    cb(result);
+  });
+}
+
+
 function getGatewayAddresses(numbers, fn) {
-  fn([ "8013604427@vtext.com" ]);
+  returnMany(numbers, fn);
 }
 
 function route(app) {
@@ -28,7 +67,7 @@ function route(app) {
         , headers = {}
         , opts = {}
         , max = 160
-        , tail = ' via tel-carrier'
+        , tail = ' via grouptextfree'
         , bodyMax = max - tail.length
         ;
 
