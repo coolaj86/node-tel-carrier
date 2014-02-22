@@ -1,6 +1,6 @@
 'use strict';
 
-var carriers = require('../carriers')
+var carriers = require('tel-carrier-gateways')
   , telDb = require('tel-carrier-db')
   ;
 

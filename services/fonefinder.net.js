@@ -1,6 +1,6 @@
 'use strict';
 
-var carriers = require('../carriers')
+var carriers = require('tel-carrier-gateways')
   ;
 
 module.exports = function (request, jar, number, opts, fn) {
