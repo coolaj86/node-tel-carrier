@@ -72,14 +72,32 @@ module.exports.create = function (opts) {
   }
   
   return {
-    lookup: function (number, fn) {
-      service(request, jar, normalizeNum(number), opts, function (err, map, opts) {
-        if (map && map.carrier) {
-          map = normalize(number, map, opts);
-          updateRegistry(number, map, opts);
+    lookup: function (numbers, fn, pre, post) {
+      if (!Array.isArray(numbers)) {
+        service = service.one || service;
+        numbers = normalizeNum(numbers);
+      } else {
+        service = service.many;
+        numbers.forEach(function (n, i) {
+          numbers[i] = normalizeNum(n);
+        });
+        numbers = numbers.filter(function (n) { return n; });
+      }
+
+      service(request, jar, numbers, opts, function (err, maps, opts) {
+        if (!Array.isArray(numbers)) {
+          if (maps && maps.carrier) {
+            maps = normalize(numbers, maps, opts);
+            updateRegistry(numbers, maps, opts);
+          }
+        } else {
+          numbers.forEach(function (n, i) {
+            maps[i] = normalize(n, maps[i], opts);
+            updateRegistry(n, maps[i], opts);
+          });
         }
-        fn(err, map);
-      });
+        fn(err, maps);
+      }, pre, post);
     }
   };
 };
