@@ -71,7 +71,8 @@ function many(request, jar, numbers, opts, fn, pre, post) {
       results.forEach(function (r) {
         if (post) { post(r); }
         mapped.push({
-          number: r.number
+          number: r.number || r.indata
+        , error: 'OK' !== r.status && r.status
         , wireless: 'y' === r.wless
         , carrier: carriers.lookupBySmsGateway(r.sms_address) || carriers.lookupByComment(r.carrier_name)
         , carrierComment: r.carrier_name
@@ -80,7 +81,7 @@ function many(request, jar, numbers, opts, fn, pre, post) {
         });
       });
 
-      fn(null, results);
+      fn(null, mapped);
     }
   );
 }

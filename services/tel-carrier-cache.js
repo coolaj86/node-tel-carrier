@@ -18,9 +18,13 @@ module.exports = function (request, jar, number, opts, fn) {
 
   map.number = number;
   map.wireless = obj.wireless;
-  carriers.lookup(number, obj.carrierName, map);
-  carriers.lookup(number, obj.carrier, map);
-  carriers.lookup(number, obj.company, map);
+  carriers.lookup(obj.carrierName, number, map);
+  carriers.lookup(obj.carrier, number, map);
+  carriers.lookup(obj.company, number, map);
+  map.smsGateway = map.smsAddress;
+  delete map.smsAddress;
+  map.mmsGateway = map.mmsAddress;
+  delete map.mmsAddress;
   map.carrierComment = obj.carrierName || obj.company;
   map.typeComment = obj.type;
 
